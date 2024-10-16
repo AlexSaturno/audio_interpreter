@@ -34,7 +34,7 @@ with open("./styles.css") as f:
 def transcrever_audio(audio_path):
     # Carregar arquivo de áudio e converter para formato compatível, como wav
     audio = AudioSegment.from_file(audio_path)
-    audio.export("temp.wav", format="wav")
+    audio.export("audios/temp.wav", format="wav")
 
     with open("temp.wav", "rb") as audio_file:
         # response = whisper.transcribe(file=audio_file)
@@ -56,40 +56,36 @@ def analise_sentimento(texto):
 
 
 def identificar_motivo(texto):
-    response = llm(f"Identifique o motivo do contato no seguinte texto:\n\n{texto}")
+    response = llm.invoke(
+        f"Identifique o motivo do contato no seguinte texto:\n\n{texto}"
+    )
     return response.content
 
 
 def identificar_solucao(texto):
-    response = llm(
+    response = llm.invoke(
         f"Identifique se o problema foi solucionado no seguinte texto:\n\n{texto}"
     )
     return response.content
 
 
 def verificar_satisfacao(texto):
-    response = llm(
+    response = llm.invoke(
         f"Identifique se o usuário está satisfeito com a ação tomada pelo operador no seguinte texto:\n\n{texto}"
-    )
-    return response.content
-
-
-def calcular_tempos(texto):
-    # Este é um exemplo fictício, na prática você precisaria calcular os tempos a partir de marcas no texto.
-    response = llm(
-        f"Calcule os seguintes tempos do seguinte texto: TMA - tempo médio de atendimento, TME - tempo médio de espera, TMS - tempo médio em silêncio por parte do operador:\n\n{texto}"
     )
     return response.content
 
 
 def main():
     st.header("Avaliação ligações")
-    uploaded_file = st.file_uploader("Anexe uma ligação no formato .wav", type="wav")
+    uploaded_file = st.file_uploader(
+        "Anexe uma ligação abaixo", type=["wav", "mp3", "m4a", "mp4"]
+    )
     if uploaded_file is not None:
         with st.spinner("Transcrevendo áudio"):
-            with open(PASTA_RAIZ / uploaded_file.name, "wb") as f:
+            with open(PASTA_AUDIOS / uploaded_file.name, "wb") as f:
                 f.write(uploaded_file.getbuffer())
-                save_path = PASTA_RAIZ / uploaded_file.name
+                save_path = PASTA_AUDIOS / uploaded_file.name
             transcricao = transcrever_audio(save_path)
 
         with st.spinner("Avaliando motivo da ligação"):

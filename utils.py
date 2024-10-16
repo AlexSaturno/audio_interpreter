@@ -2,9 +2,13 @@ import streamlit as st
 from langchain_openai import AzureChatOpenAI
 from openai import AzureOpenAI
 from pathlib import Path
+import os
 
 # Variáveis de ambiente AI
 PASTA_RAIZ = Path(__file__).parent
+PASTA_AUDIOS = Path(__file__).parent / "audios"
+if not os.path.exists(PASTA_AUDIOS):
+    os.makedirs(PASTA_AUDIOS)
 
 AZURE_OPENAI_API_KEY = st.secrets["AZURE_OPENAI_API_KEY"]
 AZURE_OPENAI_ENDPOINT = st.secrets["AZURE_OPENAI_ENDPOINT"]
