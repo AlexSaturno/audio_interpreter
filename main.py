@@ -36,7 +36,7 @@ def transcrever_audio(audio_path):
     audio = AudioSegment.from_file(audio_path)
     audio.export("audios/temp.wav", format="wav")
 
-    with open("temp.wav", "rb") as audio_file:
+    with open("audios/temp.wav", "rb") as audio_file:
         # response = whisper.transcribe(file=audio_file)
         response = whisper.audio.transcriptions.create(
             file=audio_file,
@@ -76,6 +76,26 @@ def verificar_satisfacao(texto):
     return response.content
 
 
+def resumo_consolidado_ligacao(texto):
+    response = llm.invoke(
+        f"""
+        Identifique no contexto os pontos abaixo:
+            - Motivo da ligação
+            - Solução proposta
+            - Se o problema foi resolvido
+        
+        Contexto:
+        {texto}
+
+        Saída no formato:
+            - Motivo da ligação: motivo
+            - Solução proposta: solução
+            - Problema resolvido? Sim ou não, se teve alinhamento de novas ações ou retorno da ligação
+        """
+    )
+    return response.content
+
+
 def main():
     st.header("Avaliação ligações")
     uploaded_file = st.file_uploader(
@@ -88,23 +108,33 @@ def main():
                 save_path = PASTA_AUDIOS / uploaded_file.name
             transcricao = transcrever_audio(save_path)
 
-        with st.spinner("Avaliando motivo da ligação"):
-            motivo = identificar_motivo(transcricao)
-            st.write("Motivo:")
-            st.write(motivo)
-            st.write("")
-
-        with st.spinner("Avaliando solução proposta"):
-            solucao = identificar_solucao(transcricao)
-            st.write("Solução:")
-            st.write(solucao)
-            st.write("")
+        st.write("Transcrição:")
+        st.write(transcricao)
+        st.write("")
 
         with st.spinner("Verificando satisfação do cliente"):
-            satisfacao = verificar_satisfacao(transcricao)
-            st.write("Satisfação:")
-            st.write(satisfacao)
+            resumo_ligacao = resumo_consolidado_ligacao(transcricao)
+            st.write("Resumo da ligação:")
+            st.write(resumo_ligacao)
             st.write("")
+
+        # with st.spinner("Avaliando motivo da ligação"):
+        #     motivo = identificar_motivo(transcricao)
+        #     st.write("Motivo:")
+        #     st.write(motivo)
+        #     st.write("")
+
+        # with st.spinner("Avaliando solução proposta"):
+        #     solucao = identificar_solucao(transcricao)
+        #     st.write("Solução:")
+        #     st.write(solucao)
+        #     st.write("")
+
+        # with st.spinner("Verificando satisfação do cliente"):
+        #     satisfacao = verificar_satisfacao(transcricao)
+        #     st.write("Satisfação:")
+        #     st.write(satisfacao)
+        #     st.write("")
 
 
 if __name__ == "__main__":
