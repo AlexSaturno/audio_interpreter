@@ -24,6 +24,7 @@ with open("./styles.css") as f:
 pages = {
     "01_Motivos_Chamadas": "./pages/01_Motivos_Chamadas.py",
     "02_Tabulacoes": "./pages/02_Tabulacoes.py",
+    "03_Ouvidoria_Taxonomias": "./pages/03_Ouvidoria_Taxonomias.py",
 }
 
 
@@ -35,11 +36,14 @@ def main():
     st.subheader("Página inicial", divider=True)
     motivos_button = st.button("Motivos Chamadas", key="button_motivos")
     tabulacoes_button = st.button("Tabulacoes", key="button_tabulacoes")
+    ouvidoria_button = st.button("Taxonomias", key="button_taxonomias")
 
     if motivos_button:
         st.switch_page(pages["01_Motivos_Chamadas"])
     if tabulacoes_button:
         st.switch_page(pages["02_Tabulacoes"])
+    if ouvidoria_button:
+        st.switch_page(pages["03_Ouvidoria_Taxonomias"])
 
 
 if __name__ == "__main__":

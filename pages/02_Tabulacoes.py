@@ -65,6 +65,8 @@ def similarity_search(texto):
 
     Busque na coluna 'Quando usar' o termo que melhor se assemelha ao motivo da ligação.
     Pode ser que não se enquadre 100%, mas sempre categorize de alguma forma.
+    
+    É obrigatório preencher uma categoria para cada motivo.
 
     Resumo da ligação:
     {texto}
@@ -80,15 +82,15 @@ def similarity_search(texto):
 def resumo_consolidado_ligacao(texto):
     response = llm.invoke(
         f"""
-        Identifique no contexto os pontos abaixo:
+        Identifique no contexto os pontos abaixo, repetindo e enumerando quantos assuntos forem citados pelo cliente:
             - Motivo da ligação
             - Solução proposta
             - Se o problema foi resolvido
-        
+
         Contexto:
         {texto}
 
-        Saída no formato:
+        Saída no formato, para quantos assuntos forem tratados pelo cliente:
             - Motivo da ligação: motivo
             - Solução proposta: solução
             - Problema resolvido? Sim ou não, se teve alinhamento de novas ações ou retorno da ligação

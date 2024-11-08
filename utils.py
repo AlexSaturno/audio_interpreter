@@ -7,8 +7,11 @@ import os
 # Variáveis de ambiente AI
 PASTA_RAIZ = Path(__file__).parent
 PASTA_AUDIOS = Path(__file__).parent / "audios"
+PASTA_ARQUIVOS = Path(__file__).parent / "arquivos"
 if not os.path.exists(PASTA_AUDIOS):
     os.makedirs(PASTA_AUDIOS)
+if not os.path.exists(PASTA_ARQUIVOS):
+    os.makedirs(PASTA_ARQUIVOS)
 
 AZURE_OPENAI_API_KEY = st.secrets["AZURE_OPENAI_API_KEY"]
 AZURE_OPENAI_ENDPOINT = st.secrets["AZURE_OPENAI_ENDPOINT"]
