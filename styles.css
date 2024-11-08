@@ -98,17 +98,7 @@ div[data-testid="stSidebarCollapseButton"] button {
 }
 
 div[data-testid="collapsedControl"] button {
-  background-color: transparent;
-  border-radius: var(--border-radius);
-  transition: 0.3s ease-in-out;
-
-  svg {
-    fill: var(--primary-medium);
-  }
-
-  &:hover {
-    background-color: var(--light-blue);
-  }
+  display: none;
 }
 
 div[data-testid="stExpander"] details {
@@ -370,7 +360,10 @@ label[data-baseweb="radio"] > div:first-child {
 
 /* Estilização de acordo com Figma Cockpit */
 
-[data-testid="stHeader"],
+[data-testid="stHeader"] {
+  display: none;
+}
+
 [data-testid="stAppViewBlockContainer"],
 [data-testid="stBottomBlockContainer"],
 div[data-testid="ScrollToBottomContainer"] .main,
