@@ -6,6 +6,8 @@ from pydub import AudioSegment
 
 # Outras
 from utils import *
+import io
+from datetime import datetime, timedelta
 
 
 ################################################################################################################################
@@ -13,7 +15,7 @@ from utils import *
 ################################################################################################################################
 # Início da aplicação
 st.set_page_config(
-    page_title="Avaliador de ligações",
+    page_title="Transcrição de ligações",
     page_icon=":black_medium_square:",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -64,26 +66,72 @@ def resumo_consolidado_ligacao(texto):
 
 
 def main():
-    st.header("Avaliação ligações")
-    uploaded_file = st.file_uploader(
-        "Anexe uma ligação abaixo", type=["wav", "mp3", "m4a", "mp4"]
+    if "desativa_download" not in st.session_state:
+        st.session_state.desativa_download = True
+
+    st.header("Transcrição de ligações")
+    uploaded_files = st.file_uploader(
+        "Anexe uma ligação abaixo",
+        type=["wav", "mp3", "m4a", "mp4"],
+        accept_multiple_files=True,
     )
-    if uploaded_file is not None:
-        with st.spinner("Transcrevendo áudio"):
-            with open(PASTA_AUDIOS / uploaded_file.name, "wb") as f:
-                f.write(uploaded_file.getbuffer())
-                save_path = PASTA_AUDIOS / uploaded_file.name
-            transcricao = transcrever_audio(save_path)
 
-        st.write("Transcrição:")
-        st.write(transcricao)
-        st.write("")
+    transcricoes = []
+    nomes_arquivos = []
+    texto_output = ""
 
-        with st.spinner("Verificando satisfação do cliente"):
-            resumo_ligacao = resumo_consolidado_ligacao(transcricao)
-            st.write("Resumo da ligação:")
-            st.write(resumo_ligacao)
-            st.write("")
+    with st.container(border=True):
+        if uploaded_files is not None:
+            if st.session_state["desativa_download"] == True:
+                with st.spinner("Transcrevendo áudio"):
+                    for uploaded_file in uploaded_files:
+                        with open(PASTA_AUDIOS / uploaded_file.name, "wb") as f:
+                            f.write(uploaded_file.getbuffer())
+                            save_path = PASTA_AUDIOS / uploaded_file.name
+                        nomes_arquivos.append(uploaded_file.name)
+                        transcricoes.append(transcrever_audio(save_path))
+                        st.session_state["desativa_download"] = False
+
+            for i, transcricao in enumerate(transcricoes):
+                st.write(f"Transcrição do arquivo: {nomes_arquivos[i]}:")
+                st.write(transcricao)
+                st.write("")
+
+                texto_output += (
+                    f"Transcrição do arquivo {nomes_arquivos[i]}:\n{transcricao}\n\n"
+                )
+
+    with st.container(border=False):
+        buf = io.StringIO()
+        buf.write(texto_output)
+        buf.seek(0)
+
+        def export_result():
+            buf.seek(0)
+
+        data_processamento = datetime.now().strftime("%Y-%m-%d")
+        hora_processamento = (datetime.now() - timedelta(hours=3)).strftime("%H:%M")
+        txt_file_download_name = (
+            f"transcricoes_{data_processamento}_{hora_processamento}.txt"
+        )
+        full_path = os.path.join(PASTA_ARQUIVOS, txt_file_download_name)
+        if st.download_button(
+            "Download Transcrições",
+            buf.getvalue().encode("utf-8"),
+            txt_file_download_name,
+            "text/plain",
+            on_click=export_result,
+            disabled=st.session_state["desativa_download"],
+        ):
+            st.session_state["desativa_download"] = True
+            with open(full_path + ".txt", "w") as file:
+                file.write(texto_output)
+
+        # with st.spinner("Verificando satisfação do cliente"):
+        #     resumo_ligacao = resumo_consolidado_ligacao(transcricao)
+        #     st.write("Resumo da ligação:")
+        #     st.write(resumo_ligacao)
+        #     st.write("")
 
 
 if __name__ == "__main__":
