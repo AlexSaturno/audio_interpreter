@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 ################################################################################################################################
 # Início da aplicação
 st.set_page_config(
-    page_title="Transcrição de ligações",
+    page_title="Avaliação de ligações",
     page_icon=":black_medium_square:",
     layout="wide",
     initial_sidebar_state="collapsed",
@@ -69,7 +69,7 @@ def main():
     if "desativa_download" not in st.session_state:
         st.session_state.desativa_download = True
 
-    st.header("Transcrição de ligações")
+    st.header("Avaliação de ligações")
     uploaded_files = st.file_uploader(
         "Anexe uma ligação abaixo",
         type=["wav", "mp3", "m4a", "mp4"],
@@ -83,7 +83,7 @@ def main():
     with st.container(border=True):
         if uploaded_files is not None:
             if st.session_state["desativa_download"] == True:
-                with st.spinner("Transcrevendo áudio"):
+                with st.spinner("Transcrevendo áudios e identificando motivos..."):
                     for uploaded_file in uploaded_files:
                         with open(PASTA_AUDIOS / uploaded_file.name, "wb") as f:
                             f.write(uploaded_file.getbuffer())
@@ -97,9 +97,13 @@ def main():
                 st.write(transcricao)
                 st.write("")
 
-                texto_output += (
-                    f"Transcrição do arquivo {nomes_arquivos[i]}:\n{transcricao}\n\n"
-                )
+                resumo_ligacao = resumo_consolidado_ligacao(transcricao)
+                st.write("Resumo da ligação:")
+                st.write(resumo_ligacao)
+                st.write("")
+                st.write("")
+
+                texto_output += f"Transcrição do arquivo {nomes_arquivos[i]}:\n{transcricao}\nResumo:{resumo_ligacao}\n\n"
 
     with st.container(border=False):
         buf = io.StringIO()
@@ -116,7 +120,7 @@ def main():
         )
         full_path = os.path.join(PASTA_ARQUIVOS, txt_file_download_name)
         if st.download_button(
-            "Download Transcrições",
+            "Download Avaliações",
             buf.getvalue().encode("utf-8"),
             txt_file_download_name,
             "text/plain",
