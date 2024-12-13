@@ -102,8 +102,9 @@ def main():
                 st.write(resumo_ligacao)
                 st.write("")
                 st.write("")
+                st.write("")
 
-                texto_output += f"Transcrição do arquivo {nomes_arquivos[i]}:\n{transcricao}\nResumo:{resumo_ligacao}\n\n"
+                texto_output += f"Transcrição do arquivo {nomes_arquivos[i]}:\n{transcricao}\nResumo:\n{resumo_ligacao}\n\n\n\n"
 
     with st.container(border=False):
         buf = io.StringIO()
