@@ -38,12 +38,13 @@ Você analisa comentários feitos por clientes e os categoriza como:
 - CANAIS
 - PRODUTO
 - PROCESSOS
+- NÃO DETERMINADO
 
 Um comentário pode se enquadrar em duas categorias, nesse caso responda as duas.
 
 Depois você informa se o comentário foi positivo, neutro ou negativo
 
-Formato de saída esperado, SOMENTE:
+Formato de saída obrigatório:
     "cliente": cd_cli,
     "verbatim": comentario,
     "pilar": categorização,
@@ -117,7 +118,15 @@ def main():
             ]
 
             # Converte as strings JSON em dicionários
-            parsed_data = [json.loads(item) for item in cleaned_data]
+            # parsed_data = [json.loads(item) for item in cleaned_data]
+            parsed_data = []
+            for item in cleaned_data:
+                try:
+                    json_data = json.loads(item)
+                    parsed_data.append(json_data)
+                except:
+                    print(f"Erro ao decodificar JSON: {e}")
+                    print(f"Dados inválidos: {item}")
 
             # Cria o DataFrame com os dados e salva o excel
             df_parsed = pd.DataFrame(parsed_data)
