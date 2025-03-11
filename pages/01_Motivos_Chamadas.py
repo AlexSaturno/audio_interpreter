@@ -8,6 +8,9 @@ from pydub import AudioSegment
 from utils import *
 import io
 from datetime import datetime, timedelta
+from azure.storage.blob import BlobServiceClient
+from io import BytesIO
+from langchain_community.callbacks import get_openai_callback
 
 
 ################################################################################################################################
@@ -23,6 +26,22 @@ st.set_page_config(
 # Leitura do arquivo CSS de estilização
 with open("./styles.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+
+################################################################################################################################
+# CONFIGURAÇÕES BLOB
+################################################################################################################################
+# Configurações do Blob Storage
+azure_blob_connection_string = st.secrets["AZURE_BLOB_CONNECTION_STRING"]
+container_name = st.secrets["AZURE_BLOB_CONTAINER_NAME"]
+blob_name = "chat_log.xlsx"
+
+# Cria o BlobServiceClient
+blob_service_client = BlobServiceClient.from_connection_string(
+    azure_blob_connection_string
+)
+container_client = blob_service_client.get_container_client(container_name)
+blob_client = container_client.get_blob_client(blob_name)
 
 
 ################################################################################################################################

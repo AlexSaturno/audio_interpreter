@@ -124,7 +124,7 @@ def main():
                 try:
                     json_data = json.loads(item)
                     parsed_data.append(json_data)
-                except:
+                except Exception as e:
                     print(f"Erro ao decodificar JSON: {e}")
                     print(f"Dados inválidos: {item}")
 
